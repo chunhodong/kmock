@@ -1,0 +1,3 @@
+
+org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc=\
+  io.github.test.kmock.config.KMockConfig
