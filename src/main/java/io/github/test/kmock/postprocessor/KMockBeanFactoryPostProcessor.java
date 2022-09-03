@@ -9,7 +9,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        //빈을 읽어서 등록
-        //
+        //mock으로등록
     }
 }
