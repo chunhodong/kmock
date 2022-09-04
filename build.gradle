@@ -21,9 +21,12 @@ dependencies {
 	//롬복
 	compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
-
 	testCompileOnly 'org.projectlombok:lombok:1.18.22'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+	//mokito
+	implementation 'org.mockito:mockito-core:4.4.0'
+
 }
 
 tasks.named('test') {
