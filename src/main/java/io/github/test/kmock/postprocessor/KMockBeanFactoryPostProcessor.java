@@ -11,6 +11,7 @@ import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,12 +55,30 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
                 .distinct()
                 .collect(Collectors.toList());
 
+
         //mock등록
         parameterClasses.forEach(aClass -> {
             String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
-            beanFactory.registerSingleton(beanName,Mockito.mock(aClass));
-        });
+        /*    try {
+                Constructor<?> constructor = aClass.getConstructors()[0];
 
+               // Mockito.mock(aClass);
+
+
+
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }*/
+            beanFactory.registerSingleton(beanName,Mockito.mock(aClass));
+
+
+            //((BeanDefinitionRegistry) beanFactory).registerBeanDefinition(beanName,new RootBeanDefinition(aClass));
+
+        });
     }
     
 }

@@ -2,6 +2,7 @@ package io.github.test.kmock.controller;
 
 import io.github.test.kmock.annotation.KMockBean;
 import io.github.test.kmock.annotation.KSpyBean;
+import io.github.test.kmock.service.FestService;
 import io.github.test.kmock.service.JestService;
 import io.github.test.kmock.service.TestService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ public class JestControllerTest {
 
 
     @KSpyBean
-    private JestService testService;
+    private FestService testService;
 
 
 

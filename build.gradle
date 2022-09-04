@@ -14,8 +14,10 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework:spring-test:5.3.17'
+
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	//롬복
