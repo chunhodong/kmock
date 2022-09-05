@@ -1,25 +1,17 @@
 package io.github.test.kmock.postprocessor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.mockito.Mockito;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.cglib.proxy.Enhancer;
-import org.springframework.cglib.proxy.MethodInterceptor;
-import org.springframework.cglib.proxy.NoOp;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
-import org.springframework.objenesis.Objenesis;
 import org.springframework.objenesis.ObjenesisStd;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +29,7 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
         //생성자추출
         List<Constructor<?>> constructorList = Arrays.stream(beanFactory.getBeanDefinitionNames())
                 .map(beanDefinitionName -> beanFactory.getBeanDefinition(beanDefinitionName))
-                .filter(beanDefinition -> {
-
-                    System.out.println(beanDefinition.getBeanClassName());
-                    return beanDefinition instanceof ScannedGenericBeanDefinition;
-
-                })
+                .filter(beanDefinition -> beanDefinition instanceof ScannedGenericBeanDefinition)
                 .map(beanDefinition -> {
                     try {
                         Constructor<?> constructor = BeanUtils.getResolvableConstructor(this.getClass().getClassLoader().loadClass(beanDefinition.getBeanClassName()));
@@ -69,6 +56,10 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
             String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
             Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
             beanFactory.registerSingleton(beanName,object);
+            ProxyFactory proxyFactory = new ProxyFactory();
+            Object proxy = (Object) proxyFactory.getProxy();
+
+
         });
     }
   
