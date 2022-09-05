@@ -1,13 +1,15 @@
 package io.github.test.kmock.listener;
 
-import io.github.test.kmock.KmockApplication;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockitoPostProcessor;
+import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 @Slf4j
 @ToString
@@ -21,17 +23,7 @@ public class KMockTestExecutionListener extends AbstractTestExecutionListener {
      */
     @Override
     public void prepareTestInstance(TestContext testContext) throws Exception {
-        ApplicationContext applicationContext = testContext.getApplicationContext();
 
-
-        MockitoPostProcessor postProcessor = applicationContext
-                .getBean(MockitoPostProcessor.class);
-
-        Mockito mockito = (Mockito) applicationContext
-                .getBean("jestService");
-
-        System.out.println(postProcessor.getOrder());
-        System.out.println(postProcessor.hashCode());
 
     }
 }

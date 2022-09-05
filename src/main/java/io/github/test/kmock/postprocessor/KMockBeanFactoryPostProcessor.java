@@ -7,11 +7,19 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.cglib.proxy.Enhancer;
+import org.springframework.cglib.proxy.MethodInterceptor;
+import org.springframework.cglib.proxy.NoOp;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
+import org.springframework.objenesis.Objenesis;
+import org.springframework.objenesis.ObjenesisStd;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,29 +64,14 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
                 .collect(Collectors.toList());
 
 
-        //mock등록
+        //객체등록
         parameterClasses.forEach(aClass -> {
             String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
-        /*    try {
-                Constructor<?> constructor = aClass.getConstructors()[0];
-
-               // Mockito.mock(aClass);
-
-
-
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }*/
-            beanFactory.registerSingleton(beanName,Mockito.mock(aClass));
-
-
-            //((BeanDefinitionRegistry) beanFactory).registerBeanDefinition(beanName,new RootBeanDefinition(aClass));
-
+            Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
+            beanFactory.registerSingleton(beanName,object);
         });
     }
+  
+
     
 }

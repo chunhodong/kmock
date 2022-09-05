@@ -27,10 +27,9 @@ public class TestControllerTest {
     @Test
     void 컨트롤러테스트1(){
         log.info("run(1)");
-        AutowiredAnnotationBeanPostProcessor awe;
     }
 
-    @Test
+  /*  @Test
     void 컨트롤러테스트2(){
         log.info("run2()");
 
@@ -40,5 +39,5 @@ public class TestControllerTest {
     void 컨트롤러테스트3(){
         log.info("run3()");
 
-    }
+    }*/
 }
