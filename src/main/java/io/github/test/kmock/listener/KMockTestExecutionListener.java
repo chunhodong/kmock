@@ -23,41 +23,30 @@ public class KMockTestExecutionListener extends AbstractTestExecutionListener {
      */
     @Override
     public void prepareTestInstance(TestContext testContext) {
-        //빈으로찾기
+
+        registerKMock(testContext,KMockBean.class);
+        registerKMock(testContext,KSpyBean.class);
+
+
+
+    }
+
+    private void registerKMock(TestContext testContext,Class<?> annotationType){
         Field[] fields = testContext.getTestClass().getDeclaredFields();
-
-        //mock주입
         Arrays.stream(fields)
                 .filter(field -> Arrays.stream(field.getDeclaredAnnotations())
-                        .filter(annotation -> annotation.annotationType() == KMockBean.class)
+                        .filter(annotation -> annotation.annotationType() == annotationType)
                         .count() > 0)
                 .forEach(field -> {
                     try {
-                        Object object = testContext.getApplicationContext().getBean(field.getType());
+                        Object instance = new ObjenesisStd().getInstantiatorOf(field.getType()).newInstance();
                         field.setAccessible(true);
-                        field.set(testContext.getTestInstance(), Mockito.mock(object.getClass()));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-        //spy주입
-        Arrays.stream(fields)
-                .filter(field -> Arrays.stream(field.getDeclaredAnnotations())
-                        .filter(annotation -> annotation.annotationType() == KSpyBean.class)
-                        .count() > 0)
-                .forEach(field -> {
-                    try {
-                        field.getType();
-                        Object object = new ObjenesisStd().getInstantiatorOf(field.getType()).newInstance();
-                        field.setAccessible(true);
+                        Object object = annotationType == KMockBean.class ? Mockito.mock(instance.getClass()) : instance;
                         field.set(testContext.getTestInstance(),object);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
                 });
-
-
     }
 
 

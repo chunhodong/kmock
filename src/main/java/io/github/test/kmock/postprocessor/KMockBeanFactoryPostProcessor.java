@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+
     /**
      * beanfactory에 등록된 bean이름추출
      * controller의존객체 mocking처리
@@ -25,17 +26,12 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 
+
         //생성자추출
         List<Constructor<?>> constructorList = getConstructors(beanFactory);
 
         //생성자파라미터추출
         List<Class<?>> parameterClasses = getConstructorParameters(constructorList);
-
-
-        //1.같은 클래스에 다른변수명
-        //2. 같은 인터페이스에 다른 클래스
-
-
 
         //객체등록
         parameterClasses.forEach(aClass -> {
@@ -45,6 +41,11 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
         });
     }
 
+    /**
+     * 사용자가 작성한 빈오브젝트에서 생성자 추출
+     * @param beanFactory
+     * @return 생성자리스트
+     */
     private List<Constructor<?>> getConstructors(ConfigurableListableBeanFactory beanFactory){
         return Arrays.stream(beanFactory.getBeanDefinitionNames())
                 .map(beanDefinitionName -> beanFactory.getBeanDefinition(beanDefinitionName))
@@ -63,6 +64,11 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 생성자의 파라미터타입 추출
+     * @param constructorList
+     * @return 파라미터 클래스리스트
+     */
     private List<Class<?>> getConstructorParameters(List<Constructor<?>> constructorList){
         return constructorList
                 .stream()
