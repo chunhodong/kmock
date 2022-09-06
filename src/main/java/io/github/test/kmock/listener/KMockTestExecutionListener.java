@@ -3,6 +3,7 @@ package io.github.test.kmock.listener;
 import io.github.test.kmock.annotation.KMockBean;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.mockito.Mockito;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
@@ -25,14 +26,28 @@ public class KMockTestExecutionListener extends AbstractTestExecutionListener {
         //빈으로찾기
         Field[] fields = testContext.getTestClass().getDeclaredFields();
 
-
-        //필드주입
-        long count = Arrays.stream(fields)
+        Arrays.stream(fields)
                 .filter(field -> Arrays.stream(field.getDeclaredAnnotations())
                         .filter(annotation -> annotation.annotationType() == KMockBean.class)
                         .count() > 0)
-                .count();
+                .forEach(field -> {
+                    Object object = testContext.getApplicationContext().getBean(field.getType());
 
+                    field.setAccessible(true);
+                    try {
+                        field.set(testContext.getTestInstance(), Mockito.mock(object.getClass()));
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+
+
+                /*.forEach(aClass -> {
+                    Object object = testContext.getApplicationContext().getBean(aClass);
+                    Class c = object.getClass();
+
+                });*/
         //각 테스트실행전 reset
 
     }

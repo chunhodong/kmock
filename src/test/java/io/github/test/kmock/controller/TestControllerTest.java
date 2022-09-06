@@ -1,6 +1,7 @@
 package io.github.test.kmock.controller;
 
 import io.github.test.kmock.annotation.KMockBean;
+import io.github.test.kmock.service.JestService;
 import io.github.test.kmock.service.TestService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,11 @@ public class TestControllerTest {
     @KMockBean
     private TestService testService;
 
+    @KMockBean
+    private TestService test1Service;
+
+    @KMockBean
+    private JestService jestService;
 
 
     @BeforeEach
@@ -24,6 +30,7 @@ public class TestControllerTest {
 
     @Test
     void 컨트롤러테스트(){
+        System.out.println("ttt");
 
     }
 
