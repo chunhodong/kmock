@@ -42,7 +42,6 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
             String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
             Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
             beanFactory.registerSingleton(beanName,object);
-
         });
     }
 
