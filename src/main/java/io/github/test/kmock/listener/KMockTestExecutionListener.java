@@ -41,14 +41,5 @@ public class KMockTestExecutionListener extends AbstractTestExecutionListener {
                     }
                 });
 
-
-
-                /*.forEach(aClass -> {
-                    Object object = testContext.getApplicationContext().getBean(aClass);
-                    Class c = object.getClass();
-
-                });*/
-        //각 테스트실행전 reset
-
     }
 }
