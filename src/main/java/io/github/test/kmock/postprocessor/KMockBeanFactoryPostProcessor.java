@@ -1,7 +1,6 @@
 package io.github.test.kmock.postprocessor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -25,9 +24,30 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-        
+
         //생성자추출
-        List<Constructor<?>> constructorList = Arrays.stream(beanFactory.getBeanDefinitionNames())
+        List<Constructor<?>> constructorList = getConstructors(beanFactory);
+
+        //생성자파라미터추출
+        List<Class<?>> parameterClasses = getConstructorParameters(constructorList);
+
+
+        //1.같은 클래스에 다른변수명
+        //2. 같은 인터페이스에 다른 클래스
+
+
+
+        //객체등록
+        parameterClasses.forEach(aClass -> {
+            String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
+            Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
+            beanFactory.registerSingleton(beanName,object);
+
+        });
+    }
+
+    private List<Constructor<?>> getConstructors(ConfigurableListableBeanFactory beanFactory){
+        return Arrays.stream(beanFactory.getBeanDefinitionNames())
                 .map(beanDefinitionName -> beanFactory.getBeanDefinition(beanDefinitionName))
                 .filter(beanDefinition -> beanDefinition instanceof ScannedGenericBeanDefinition)
                 .map(beanDefinition -> {
@@ -42,25 +62,14 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
                     }
                 })
                 .collect(Collectors.toList());
+    }
 
-        //생성자파라미터추출
-        List<Class<?>> parameterClasses = constructorList
+    private List<Class<?>> getConstructorParameters(List<Constructor<?>> constructorList){
+        return constructorList
                 .stream()
                 .flatMap(constructor -> Arrays.stream(constructor.getParameterTypes()))
                 .distinct()
                 .collect(Collectors.toList());
-
-
-        //객체등록
-        parameterClasses.forEach(aClass -> {
-            String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
-            Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
-            beanFactory.registerSingleton(beanName,object);
-            ProxyFactory proxyFactory = new ProxyFactory();
-            Object proxy = (Object) proxyFactory.getProxy();
-
-
-        });
     }
   
 
