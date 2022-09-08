@@ -20,12 +20,9 @@ public class KMockFieldStore {
     }
 
     public boolean isContainsAnnotation(Class<?> aClass,Class<? extends Annotation> annotation) {
-        Class<?> findClass = Arrays.stream(this.fields)
-                .filter(field -> field.getDeclaringClass().equals(aClass))
-                .findFirst()
-                .map(field -> field.getDeclaringClass())
-                .orElseThrow(() -> new IllegalArgumentException("no matched test class field"));
-        return Arrays.stream(findClass.getDeclaredAnnotations()).filter(a -> a.annotationType().equals(annotation))
+        return Arrays.stream(this.fields)
+                .filter(field -> field.getType().equals(aClass))
+                .filter(field -> Arrays.stream(field.getDeclaredAnnotations()).anyMatch(a->a.annotationType().equals(annotation)))
                 .count() > 0;
 
     }

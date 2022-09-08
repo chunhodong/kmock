@@ -36,7 +36,7 @@ public class KMockApplicationEventListener implements ApplicationListener<Applic
                 .build();
 
 
-        String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(sourceClass), (BeanDefinitionRegistry) event.getApplicationContext().getBeanFactory());
+        String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(KMockFieldStore.class), (BeanDefinitionRegistry) event.getApplicationContext().getBeanFactory());
 
         event.getApplicationContext().getBeanFactory()
                 .registerSingleton(beanName,properties);

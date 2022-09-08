@@ -52,7 +52,7 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
                     if(kMockFieldProperties.isContainsAnnotation(aClass, KMockBean.class)){
                         beanFactory.registerSingleton(beanName, Mockito.mock(aClass));
                     }
-                    if(kMockFieldProperties.isContainsAnnotation(aClass, KSpyBean.class)){
+                    else if(kMockFieldProperties.isContainsAnnotation(aClass, KSpyBean.class)){
                         beanFactory.registerSingleton(beanName, Mockito.spy(object));
                     }
                     else {
