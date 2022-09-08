@@ -1,8 +1,9 @@
 package io.github.test.kmock.postprocessor;
 
-import io.github.test.kmock.util.KMockFieldProperties;
+import io.github.test.kmock.annotation.KMockBean;
+import io.github.test.kmock.annotation.KSpyBean;
+import io.github.test.kmock.util.KMockFieldStore;
 import lombok.extern.slf4j.Slf4j;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -24,13 +25,13 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     /**
      * beanfactory에 등록된 bean이름추출
      * controller의존객체 mocking처리
+     *
      * @param beanFactory
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 
-        KMockFieldProperties kMockFieldProperties = beanFactory.getBean(KMockFieldProperties.class);
-
+        KMockFieldStore kMockFieldProperties = beanFactory.getBean(KMockFieldStore.class);
 
 
         //생성자추출
@@ -41,25 +42,35 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
         //객체등록
         parameterClasses.stream()
-
-                .filter(aClass -> kMockFieldProperties.isContainField(aClass))
                 .forEach(aClass -> {
-                    //kMockFieldProperties.getField(aClass);
 
 
-            String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
-            Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
+                    String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass), (BeanDefinitionRegistry) beanFactory);
+                    Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
 
-            beanFactory.registerSingleton(beanName,object);
-        });
+
+                    if(kMockFieldProperties.isContainsAnnotation(aClass, KMockBean.class)){
+                        beanFactory.registerSingleton(beanName, Mockito.mock(aClass));
+                    }
+                    if(kMockFieldProperties.isContainsAnnotation(aClass, KSpyBean.class)){
+                        beanFactory.registerSingleton(beanName, Mockito.spy(object));
+                    }
+                    else {
+                        beanFactory.registerSingleton(beanName, object);
+
+                    }
+
+
+                });
     }
 
     /**
      * 사용자가 작성한 빈오브젝트에서 생성자 추출
+     *
      * @param beanFactory
      * @return 생성자리스트
      */
-    private List<Constructor<?>> getConstructors(ConfigurableListableBeanFactory beanFactory){
+    private List<Constructor<?>> getConstructors(ConfigurableListableBeanFactory beanFactory) {
         return Arrays.stream(beanFactory.getBeanDefinitionNames())
                 .map(beanDefinitionName -> beanFactory.getBeanDefinition(beanDefinitionName))
                 .filter(beanDefinition -> beanDefinition instanceof ScannedGenericBeanDefinition)
@@ -79,17 +90,17 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
     /**
      * 생성자의 파라미터타입 추출
+     *
      * @param constructorList
      * @return 파라미터 클래스리스트
      */
-    private List<Class<?>> getConstructorParameters(List<Constructor<?>> constructorList){
+    private List<Class<?>> getConstructorParameters(List<Constructor<?>> constructorList) {
         return constructorList
                 .stream()
                 .flatMap(constructor -> Arrays.stream(constructor.getParameterTypes()))
                 .distinct()
                 .collect(Collectors.toList());
     }
-  
 
-    
+
 }

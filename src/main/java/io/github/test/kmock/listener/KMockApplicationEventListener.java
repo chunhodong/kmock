@@ -2,7 +2,7 @@ package io.github.test.kmock.listener;
 
 import io.github.test.kmock.annotation.KMockBean;
 import io.github.test.kmock.annotation.KSpyBean;
-import io.github.test.kmock.util.KMockFieldProperties;
+import io.github.test.kmock.util.KMockFieldStore;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
@@ -30,7 +30,7 @@ public class KMockApplicationEventListener implements ApplicationListener<Applic
         Class<?> sourceClass = source.getMainApplicationClass();
         Field[] fields = sourceClass.getDeclaredFields();
 
-        KMockFieldProperties properties = KMockFieldProperties
+        KMockFieldStore properties = KMockFieldStore
                 .builder()
                 .fields(fields)
                 .build();
