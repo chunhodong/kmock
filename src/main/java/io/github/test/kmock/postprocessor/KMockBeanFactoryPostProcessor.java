@@ -1,6 +1,9 @@
 package io.github.test.kmock.postprocessor;
 
+import io.github.test.kmock.util.KMockFieldProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -26,6 +29,9 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 
+        KMockFieldProperties kMockFieldProperties = beanFactory.getBean(KMockFieldProperties.class);
+
+
 
         //생성자추출
         List<Constructor<?>> constructorList = getConstructors(beanFactory);
@@ -34,9 +40,16 @@ public class KMockBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
         List<Class<?>> parameterClasses = getConstructorParameters(constructorList);
 
         //객체등록
-        parameterClasses.forEach(aClass -> {
+        parameterClasses.stream()
+
+                .filter(aClass -> kMockFieldProperties.isContainField(aClass))
+                .forEach(aClass -> {
+                    //kMockFieldProperties.getField(aClass);
+
+
             String beanName = AnnotationBeanNameGenerator.INSTANCE.generateBeanName(new RootBeanDefinition(aClass),(BeanDefinitionRegistry) beanFactory);
             Object object = new ObjenesisStd().getInstantiatorOf(aClass).newInstance();
+
             beanFactory.registerSingleton(beanName,object);
         });
     }

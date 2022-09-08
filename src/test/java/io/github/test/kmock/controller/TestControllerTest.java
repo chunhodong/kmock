@@ -17,9 +17,6 @@ public class TestControllerTest {
     @KMockBean
     private TestService testService;
 
-    @KMockBean
-    private TestService test1Service;
-
     @KSpyBean
     private JestService jestService;
 
