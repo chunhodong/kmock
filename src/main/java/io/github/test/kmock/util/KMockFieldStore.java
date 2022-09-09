@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 테스트클래스의 필드값 저장
+ */
 public class KMockFieldStore {
 
     private Field[] fields;
@@ -19,6 +22,12 @@ public class KMockFieldStore {
 
     }
 
+    /**
+     * 클래스 어노테이션포함여부 확인
+     * @param aClass
+     * @param annotation
+     * @return
+     */
     public boolean isContainsAnnotation(Class<?> aClass,Class<? extends Annotation> annotation) {
         return Arrays.stream(this.fields)
                 .filter(field -> field.getType().equals(aClass))
@@ -39,12 +48,15 @@ public class KMockFieldStore {
 
         }
 
+        /**
+         * 필드값 설정
+         * @param fields
+         * @return
+         */
         public KMockFieldStore.BuildMeBuilder fields(Field[] fields) {
             if(fields == null)return this;
             List<Field> filteredFields = filteredFields(fields);
             validateFields(filteredFields);
-
-
             this.fields = filteredFields.toArray(new Field[filteredFields.size()]);
             return this;
         }
@@ -53,6 +65,11 @@ public class KMockFieldStore {
             return new KMockFieldStore(this.fields);
         }
 
+        /**
+         * 어노테이션필드 필터링, KSpyBean,KMockBean 어노테이션 포함된 필드만 필터링
+         * @param fields
+         * @return 필터링된 필드목록
+         */
         private List<Field> filteredFields(Field[] fields){
             return Arrays.stream(fields)
                     .filter(field -> field.getDeclaredAnnotations() != null)
@@ -61,6 +78,10 @@ public class KMockFieldStore {
                     .collect(Collectors.toList());
         }
 
+        /**
+         * 필드검사
+         * @param fields
+         */
         private void validateFields(List<Field> fields){
             if(fields.size() == 0)return;
 
@@ -75,6 +96,11 @@ public class KMockFieldStore {
                     .count() > 0;
         }
 
+        /**
+         * 필드 어노테이션 검사, KMockBean,KSpyBean 어노테이션만 허용
+         * @param annotations 어노테이션목록
+         * @return
+         */
         private boolean isContainInValidAnnotaion(Annotation[] annotations){
             long inValidAnnotaionCount = Arrays.stream(annotations).filter(annotation -> !annotation.annotationType().equals(KMockBean.class) && !annotation.annotationType().equals(KSpyBean.class))
                     .count();
@@ -85,6 +111,12 @@ public class KMockFieldStore {
             return ( hasKmockAnnotaion && hasKspyAnnotation ) || inValidAnnotaionCount > 0;
         }
 
+        /**
+         * 중복된 필드값검사
+         * @param srcSize 입력값 크기
+         * @param fields  필드목록
+         * @return
+         */
         private boolean isDuplicateField(int srcSize,List<Field> fields){
             long cc = fields.stream().map(field -> field.getType())
                     .distinct().count();
