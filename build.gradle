@@ -42,7 +42,7 @@ java {
 
 publishing {
 	publications {
-		release(MavenPublication) {
+		mavenJava(MavenPublication) {
 
 			from components.java
 		}
