@@ -5,7 +5,7 @@ plugins {
 	id 'maven-publish'
 }
 
-group = 'io.github.test'
+group = 'com.github.chunhodong'
 version = '0.0.1'
 sourceCompatibility = '11'
 targetCompatibility = '11'
@@ -43,9 +43,7 @@ java {
 publishing {
 	publications {
 		maven(MavenPublication) {
-			groupId = 'io.github.test'
-			artifactId = 'kmock'
-			version = '0.0.1'
+
 			from components.java
 		}
 	}
