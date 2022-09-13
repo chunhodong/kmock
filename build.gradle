@@ -44,7 +44,6 @@ publishing {
 	publications {
 		maven(MavenPublication) {
 			groupId = 'io.github.test.kmock'
-			artifactId = 'library'
 			version = '0.0.1'
 			from components.java
 		}
